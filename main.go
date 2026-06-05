@@ -11,9 +11,19 @@ import (
 	"github.com/joho/godotenv"
 )
 
+type ContentItem struct {
+	Type string `json:"type"`
+	Text string `json:"text"`
+}
+
+type InputMessage struct {
+	Role    string        `json:"role"`
+	Content []ContentItem `json:"content"`
+}
+
 type RequestBody struct {
-	Model string `json:"model"`
-	Input string `json:"input"`
+	Model string         `json:"model"`
+	Input []InputMessage `json:"input"`
 }
 
 func main() {
@@ -26,9 +36,32 @@ func main() {
 		return
 	}
 
+	systemPrompt := "You are an experienced software engineering instructor.Provide concise, accurate explanations."
+
+	userPrompt := "Explain what REST API is in 3 sentences."
+
 	body := RequestBody{
 		Model: "gpt-5",
-		Input: "Explain what REST API is in 3 sentences.",
+		Input: []InputMessage{
+			{
+				Role: "system",
+				Content: []ContentItem{
+					{
+						Type: "input_text",
+						Text: systemPrompt,
+					},
+				},
+			},
+			{
+				Role: "user",
+				Content: []ContentItem{
+					{
+						Type: "input_text",
+						Text: userPrompt,
+					},
+				},
+			},
+		},
 	}
 
 	jsonData, err := json.Marshal(body)
